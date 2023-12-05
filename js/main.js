@@ -19,9 +19,9 @@ form.addEventListener("submit", (evento) =>{
     if(existe){
         itemAtual.id = existe.id
         atualizaElemento(itemAtual);
-        itens[existe.id] = itemAtual
-    }else{
-        itemAtual.id = itens.length
+        itens[itens.findIndex(elemento => elemento.id === existe.id)] = itemAtual
+    }else{//? : condiçãoFinal, substitui o if como operador ternário
+        itemAtual.id = itens[itens.length - 1] ? (itens[itens.length - 1]).id + 1 : 0;
         criaElemento(itemAtual);  
         itens.push(itemAtual);
     }
@@ -41,17 +41,37 @@ function criaElemento(item){
     numeroItem.dataset.id = item.id
 
     novoItem.appendChild(numeroItem);
+    novoItem.appendChild(botaoDeleta(item.id));
     novoItem.innerHTML += item.nome;
-
+   
     const lista = document.getElementById("lista");
     lista.appendChild(novoItem);
 
     //array para inserir os itens e esses ficam salvos sem se sobrepor
-    
     localStorage.setItem("item", JSON.stringify(item));
 
 }
 
 function atualizaElemento(item){
     documento.querySelector("[data-id='"+item.id+"']").innerHTML = item.quantidade
+}
+
+//função para deletar os elementos da lista quando clica-se com o mouse
+function botaoDeleta(id){
+    //cria o elemento botao
+    const elementoBotao = document.createElement("button")
+    //configura o x para excluir os elementos do botao
+    elementoBotao.innerText = "X"
+
+    elementoBotao.addEventListener("click", function(){
+        deletaElemento(this.parentNode, id);
+    })
+
+    return elementoBotao
+}
+//função criada para "deletar" a tag quando for clicada
+function deletaElemento(tag, id){
+    tag.remove();
+    itens.splice(itens, findIndex(elemento => elemento.id === id), 1);
+    localStorage.setItem("itens", JSON.stringify(itens));
 }
